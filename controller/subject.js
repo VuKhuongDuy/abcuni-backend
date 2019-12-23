@@ -106,7 +106,8 @@ module.exports.addSubject = async (req, res) => {
     }catch(e){
         if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
         res.send({
-            message: message.SERVER_ERROR,
+            // message: message.SERVER_ERROR,
+            message: e.message,
             success: false
         });
     }

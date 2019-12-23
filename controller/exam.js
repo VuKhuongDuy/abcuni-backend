@@ -66,7 +66,7 @@ module.exports.deleteExam = async(req, res) => {
 
         await db.execute(sql, params);
         res.send({
-            message: message.ADDSUCCESS,
+            message: message.DELETESUCCESS,
             success: true
         })
 

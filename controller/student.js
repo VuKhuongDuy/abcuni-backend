@@ -62,6 +62,8 @@ module.exports.deleteStudent = async (req, res) => {
         let sql_student_subject = "DELETE FROM subject_student WHERE mssv = ?";
         await db.execute(sql_student_subject, params);
 
+        let sql_removeUser = 'DELETE FROM user WHERE mssv = ?';
+        await db.execute(sql_removeUser, params);
         res.send({
             message: message.DELETESUCCESS,
             success: true
