@@ -23,7 +23,7 @@ module.exports.getSubjectRegisted = async (req, res) => {
             params = [req.params.exam_id, req.user.username];
             sql = "SELECT re.registed_id, re.subject_code, su.subject_name, su.credit, re.date, tu.time_begin, ro.room_name, re.count_registed, ro.count_computer FROM registed as re, subject as su, turn as tu, room as ro WHERE re.exam_id = ? AND re.subject_code = su.subject_code AND re.turn_id = tu.turn_id AND re.room_id = ro.room_id AND re.registed_id in (select registed_id from student_registed where mssv = ?)";
         }
-        console.log(params);
+        
         let data = await db.execute(sql, params);
         for(let i = 0; i< data.length; i++){
             let date = new Date(data[i].date);
@@ -86,39 +86,6 @@ module.exports.registSubject = async(req, res) => {
     }catch(e){
         res.send({
             // message: message.SERVER_ERROR,
-            message: e.message,
-            success: false
-        });
-    }
-}
-
-module.exports.addTurn = async (req, res) => {
-    try{
-        if(!req.body|| !req.body.length || req.body.length < 0){
-            throw new Error(message.DATA_EMPTY)
-        }
-        let listTurn = JSON.parse(JSON.stringify(req.body));
-
-        let sql_primary = "INSERT INTO turn(exam_id, subject_code, room_id, date, time_begin, time_end, registed) VALUES ";
-        let params_primary = [];
-        listTurn[0]["room_id"].forEach(room => {
-            let turn = listTurn;
-            turn[0]["room_id"] = room;
-
-            let {sql, params} = insertArrayToSql("", turn);            
-            sql_primary += sql;
-            params_primary = params_primary.concat(params);
-        });
-        sql_primary = sql_primary.replace(/;/gi, ',');
-        sql_primary = sql_primary.replace(/,$/gi, ';');
-        await db.execute(sql_primary, params_primary);
-        res.send({
-            message: message.ADDSUCCESS,
-            success: true
-        })
-    }catch(e){
-        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
-        res.send({
             message: e.message,
             success: false
         });

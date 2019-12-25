@@ -44,6 +44,7 @@ module.exports.getSubjectByStudent = async (req, res) => {
         else params = [req.user.username, req.params.exam_id];
 
         let data = await db.execute(sql, params);
+        console.log(data);
         res.send({
             success: true,
             data
@@ -69,6 +70,7 @@ module.exports.getStudentBySubject = async(req, res) => {
         let sql = "Select st.mssv, st.name_student, su.subject_code, su.subject_name, su.credit, ss.enable_test FROM subject_student as ss, student as st, subject as su WHERE ss.subject_code = ? AND ss.mssv = st.mssv AND ss.subject_code = su.subject_code AND ss.exam_id = ?";
         let params = [req.params.code_subject, req.params.exam_id];
         let data = await db.execute(sql, params);
+        console.log(data);
         res.send({
             success: true,
             data
@@ -91,7 +93,19 @@ module.exports.addSubject = async (req, res) => {
             return;
         }
         let listSubject = JSON.parse(req.body.listRoom);
+
+        if(listSubject.length > 0 && (!listSubject[0].code_subject || !listSubject[0].name_subject || !listSubject[0].credit)){
+            res.send({success: false, message: message.DATA_SUBJECT_WRONG})
+            return;
+        }
+
         for(let i =0; i< listSubject.length; i++){
+            console.log(listSubject[i].credit);
+            console.log(Number.isInteger(listSubject[i].credit));
+            if(!Number.isInteger(listSubject[i].credit)){
+                res.send({success: false, message: message.DATATYPE_NOT_NUMBER})
+                return;
+            }
             listSubject[i]['exam_id'] = req.body.exam_id;
         }
         let str = "INSERT INTO subject(subject_code, subject_name, credit, exam_id) VALUES ";     
@@ -117,13 +131,17 @@ module.exports.addSubject = async (req, res) => {
 module.exports.addStudentSubject = async (req, res) => {
     try {
         if(!req.body.listStudent  || !req.body.exam_id || !req.body.subject_code){
-            res.send({
-                success: false,
-                message: message.DATA_EMPTY
-            })
+            res.send({ success: false,message: message.DATA_EMPTY})
             return;
         }
+
         let listStudent = JSON.parse(req.body.listStudent);
+
+        if(listStudent.length>0 && (!listStudent[0].mssv || !listStudent[0].enable_test)){
+            res.send({success: false, message: message.DATA_STUDENT_SUBJECT_WRONG})
+            return;
+        }
+
         let str = "INSERT INTO subject_student(mssv, enable_test, exam_id, subject_code) VALUES ";
         for(let i=0;i < listStudent.length; i++){
             listStudent[i].exam_id = req.body.exam_id;

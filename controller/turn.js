@@ -9,6 +9,11 @@ module.exports.addTurn = async (req, res) => {
             return;
         }
         let listTurn = JSON.parse(req.body.listTurnJson);
+
+        if(listTurn.length > 0 && (!listTurn[0].turn || !listTurn[0].time_begin)){
+            res.send({success: false, message: message.DATA_TURN_WRONG})
+            return;
+        }
         let str = "INSERT INTO turn(turn_id, time_begin) VALUES ";
         let {sql, params} = insertArrayToSql(str, listTurn);
 

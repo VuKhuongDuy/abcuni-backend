@@ -205,13 +205,13 @@ module.exports.changePasswordUser = async (req, res) => {
         let params = [req.body.username];
         let user = await db.execute(sql_user, params);
 
-        // if (user.length === 0 || !db.comparePassword(req.body.oldPassword, user[0].password)) {
-        //     res.send({
-        //         success: false,
-        //         message: message.PASSWORD_WRONG
-        //     })
-        //     return;
-        // }
+        if (user.length === 0 || !db.comparePassword(req.body.oldPassword, user[0].password)) {
+            res.send({
+                success: false,
+                message: message.PASSWORD_WRONG
+            })
+            return;
+        }
 
         let sql = " UPDATE user SET password = ? WHERE mssv = ?";
         var salt = bcrypt.genSaltSync(10);

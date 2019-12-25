@@ -29,6 +29,12 @@ module.exports.addStudent = async (req, res) => {
             return;
         }
         let listStudent = JSON.parse(req.body);
+        
+        if(listStudent.length > 0 && (!listStudent[0].mssv || !listStudent[0].name || !listStudent[0].birthday || !listStudent[0].sex)){
+            res.send({success: false, message: message.DATA_STUDENT_WRONG});
+            return;
+        }
+
         let str = "INSERT INTO student(mssv, name_student, birthday, sex) VALUES ";
         let {sql, params} = insertArrayToSql(str, listStudent);
         if(params.length === 0){
