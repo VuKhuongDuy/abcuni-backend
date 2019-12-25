@@ -104,6 +104,7 @@ module.exports.addSubject = async (req, res) => {
         })
 
     }catch(e){
+        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
         if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
         res.send({
             // message: message.SERVER_ERROR,
@@ -142,6 +143,7 @@ module.exports.addStudentSubject = async (req, res) => {
             success: true
         })
     } catch (e) {
+        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
         if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
         res.send({
             message: message.SERVER_ERROR,

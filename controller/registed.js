@@ -117,6 +117,7 @@ module.exports.addTurn = async (req, res) => {
             success: true
         })
     }catch(e){
+        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
         res.send({
             message: e.message,
             success: false

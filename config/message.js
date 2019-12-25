@@ -1,5 +1,5 @@
 module.exports.message = {
-    DATA_EMPTY: 'Hãy điền đầy đủ thông tin',
+    DATA_EMPTY: 'Hãy cung cấp đầy đủ dữ liệu',
     REGISTER_TURN: "Đăng kí thành công",
     SUBJECT_EMPTY: "Hãy chọn 1 môn học",
     WRONG_LOGIN: "Tài khoản hoặc mật khẩu sai",
@@ -26,5 +26,8 @@ module.exports.message = {
     EXAM_EXISTED: "Kì thi này đã tồn tại",
     SUBJECT_NONE_EXISTED: 'Môn học không tồn tại',
     TURN_NONE_EXISTED: 'Ca thi không tồn tại',
-    ROOM_NONE_EXISTED: 'Phòng thi không tồn tại'
+    ROOM_NONE_EXISTED: 'Phòng thi không tồn tại',
+    DATA_INPUT_INVALID: 'Dữ liệu thêm vào không hợp lệ',
+    EMAIL_INVALID: 'Email không hợp lệ',
+    DATA_USER_WRONG: 'Dữ liệu vào cần đầy đủ 3 cột theo thứ tự: mssv, email, password'
 }

@@ -19,6 +19,7 @@ module.exports.addTurn = async (req, res) => {
         })
 
     } catch (e) {
+        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
         if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
         res.send({
             message: e.message,

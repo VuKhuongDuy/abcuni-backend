@@ -22,13 +22,21 @@ module.exports.getAllStudent = async (req, res) => {
 module.exports.addStudent = async (req, res) => {
     try {
         if(!req.body|| !req.body.length || req.body.length < 0){
-            throw new Error(message.DATA_EMPTY)
+            res.send({
+                success: false,
+                message: message.DATA_EMPTY
+            })
+            return;
         }
         let listStudent = JSON.parse(req.body);
         let str = "INSERT INTO student(mssv, name_student, birthday, sex) VALUES ";
         let {sql, params} = insertArrayToSql(str, listStudent);
         if(params.length === 0){
-            throw new Error(message.DATA_EMPTY);
+            res.send({
+                success: false,
+                message: message.DATA_EMPTY
+            })
+            return;
         }
 
         await db.execute(sql, params);
@@ -38,7 +46,8 @@ module.exports.addStudent = async (req, res) => {
         })
 
     } catch (e) {
-        if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
+        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
+        else if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
         res.send({
             message: e.message,
             success: false
@@ -49,7 +58,11 @@ module.exports.addStudent = async (req, res) => {
 module.exports.deleteStudent = async (req, res) => {
     try {
         if (!req.params.mssv) {
-            throw new Error(message.DATA_EMPTY);
+            res.send({
+                success: false,
+                message: message.DATA_EMPTY
+            })
+            return;
         }
 
         let sql = "DELETE FROM student WHERE mssv = ?";

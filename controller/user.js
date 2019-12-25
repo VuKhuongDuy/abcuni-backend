@@ -44,7 +44,7 @@ module.exports.login = async (req, res) => {
                 message: message.DATA_EMPTY
             })
             return;
-        } 
+        }
         let params = [req.body.username];
         let sql_user = "SELECT * FROM user WHERE mssv = ? LIMIT 1";
         let sql_admin = "SELECT * FROM admin WHERE email = ? LIMIT 1";
@@ -84,7 +84,11 @@ module.exports.login = async (req, res) => {
 module.exports.addAdmin = async (req, res) => {
     try {
         if (!req.body.password || !req.body.email) {
-            throw new Error(message.DATA_EMPTY);
+            res.send({
+                success: false,
+                message: message.DATA_EMPTY
+            })
+            return;
         }
 
         if (await existUser(req.body.email, true)) {
@@ -93,6 +97,11 @@ module.exports.addAdmin = async (req, res) => {
 
         if (!isSuperAdmin(req.user.username, req.user.password)) {
             throw new Error(message.NOT_SUPER_ADMIN);
+        }
+
+        if(!checkEmail(req.user.username)){
+            res.send({success: false, message: message.EMAIL_INVALID})
+            return;
         }
 
         var salt = bcrypt.genSaltSync(10);
@@ -117,12 +126,31 @@ module.exports.addAdmin = async (req, res) => {
 module.exports.addUser = async (req, res) => {
     try {
         if (!req.body || !req.body.length ||!req.body.length === 0 ) {
-            throw new Error(message.DATA_EMPTY);
+            res.send({
+                success: false,
+                message: message.DATA_EMPTY
+            })
+            return;
         }        
-        
         let listUser = JSON.parse(req.body);
+        if(listUser.length > 0 && (!listUser[0].password || !listUser[0].email || !listUser[0].mssv)){
+            res.send({
+                success: false,
+                message: message.DATA_USER_WRONG
+            })
+            return;
+        }
+        
         var salt = await bcrypt.genSaltSync(10);
         for(let i=0; i< listUser.length; i++){
+            console.log(listUser[i].email);
+            if(!checkEmail(listUser[i].email)){
+                res.send({
+                    success: false,
+                    message: message.EMAIL_INVALID
+                })
+                return;
+            }
             listUser[i].password += "";   
             var passwordHash = bcrypt.hashSync(listUser[i].password, salt); 
             listUser[i].password = passwordHash;
@@ -137,6 +165,7 @@ module.exports.addUser = async (req, res) => {
         })
 
     } catch (e) {
+        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
         if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
         res.send({
             message: e.message,
@@ -226,3 +255,9 @@ async function isSuperAdmin(email, password) {
     return result.length > 0;
 }
 
+function checkEmail(email){
+    let regex = /^[a-z0-9_\.]{5,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$/gm;
+    let isEmail = regex.test(email);
+    console.log(isEmail);
+    return isEmail;
+}

@@ -44,7 +44,11 @@ module.exports.addRoom = async (req, res) => {
         let {sql, params} = insertArrayToSql(str, listRoom);
         
         if(params.length === 0){
-            throw new Error(message.DATA_EMPTY);
+            res.send({
+                success: false,
+                message: message.DATA_EMPTY
+            })
+            return;
         }
 
         await db.execute(sql, params);
@@ -53,6 +57,7 @@ module.exports.addRoom = async (req, res) => {
             success: true
         })
     }catch(e){
+        if(e.code === "ER_WRONG_VALUE_COUNT_ON_ROW") e.message = message.DATA_INPUT_INVALID;
         if( e.code ===  "ER_DUP_ENTRY") e.message = message.DUPLICATED_DATA;
         res.send({
             message: e.message,
@@ -64,7 +69,11 @@ module.exports.addRoom = async (req, res) => {
 module.exports.deleteRoom = async(req, res) => {
     try{
         if(!req.params.room_id || !req.params.exam_id){
-            throw new Error(message.DATA_EMPTY);
+            res.send({
+                success: false,
+                message: message.DATA_EMPTY
+            })
+            return;
         }
         let sql = "DELETE FROM room WHERE room_id = ? AND exam_id = ?";
         let params = [req.params.room_id, req.params.exam_id];
