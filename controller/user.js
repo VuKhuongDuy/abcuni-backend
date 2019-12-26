@@ -81,6 +81,26 @@ module.exports.login = async (req, res) => {
     }
 }
 
+module.exports.getListAdmin = async(req, res) => {
+    try{
+        if(!isSuperAdmin(req.user.username)){
+            res.send({success: false, message: message.PERMISSION});
+            return;
+        }
+        let url = 'select email from admin where super_admin = 0';
+        let data = await db.execute(url);
+        res.send({
+            success: true,
+            data
+        })
+    }catch (err) {
+        res.send({
+            message: err.message,
+            success: false
+        });
+    }
+}
+
 module.exports.addAdmin = async (req, res) => {
     try {
         if (!req.body.password || !req.body.email) {
@@ -248,9 +268,9 @@ async function existUser(username) {
     return result1.length > 0 || result2.length > 0;
 }
 
-async function isSuperAdmin(email, password) {
-    let sql = "SELECT * FROM admin WHERE email = ? AND password = ? AND super_admin = 1";
-    let params = [email, password];
+async function isSuperAdmin(email) {
+    let sql = "SELECT * FROM admin WHERE email = ? AND super_admin = 1";
+    let params = [email];
     let result = await db.execute(sql, params);
     return result.length > 0;
 }

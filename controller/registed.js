@@ -14,14 +14,14 @@ module.exports.getSubjectRegisted = async (req, res) => {
 
         let sql, params;
         if(!req.params.subject_code){
-            params = [req.params.exam_id];
-            sql = "SELECT re.registed_id, re.subject_code, su.subject_name, su.credit, re.date, tu.time_begin, ro.room_name, re.count_registed, ro.count_computer FROM registed as re, subject as su, turn as tu, room as ro WHERE re.exam_id = ? AND re.subject_code = su.subject_code AND re.turn_id = tu.turn_id AND re.room_id = ro.room_id";
+            params = [req.params.exam_id, req.params.exam_id];
+            sql = "SELECT re.registed_id, re.subject_code, su.subject_name, su.credit, re.date, tu.time_begin, ro.room_name, re.count_registed, ro.count_computer FROM registed as re, subject as su, turn as tu, room as ro WHERE re.exam_id = ? AND su.exam_id = ? AND re.subject_code = su.subject_code AND re.turn_id = tu.turn_id AND re.room_id = ro.room_id";
         }else if(req.params.subject_code.length > 0 && req.params.subject_code != 'student'){
-            params = [req.params.exam_id, req.params.subject_code];
-            sql = "SELECT re.registed_id, re.subject_code, su.subject_name, su.credit, re.date, tu.time_begin, ro.room_name, re.count_registed, ro.count_computer FROM registed as re, subject as su, turn as tu, room as ro WHERE re.exam_id = ? AND re.subject_code = su.subject_code AND re.turn_id = tu.turn_id AND re.room_id = ro.room_id AND re.subject_code = ?";
+            params = [req.params.exam_id, req.params.exam_id, req.params.subject_code];
+            sql = "SELECT re.registed_id, re.subject_code, su.subject_name, su.credit, re.date, tu.time_begin, ro.room_name, re.count_registed, ro.count_computer FROM registed as re, subject as su, turn as tu, room as ro WHERE re.exam_id = ? AND su.exam_id = ? AND re.subject_code = su.subject_code AND re.turn_id = tu.turn_id AND re.room_id = ro.room_id AND re.subject_code = ?";
         }else if(req.params.subject_code  === 'student'){
-            params = [req.params.exam_id, req.user.username];
-            sql = "SELECT re.registed_id, re.subject_code, su.subject_name, su.credit, re.date, tu.time_begin, ro.room_name, re.count_registed, ro.count_computer FROM registed as re, subject as su, turn as tu, room as ro WHERE re.exam_id = ? AND re.subject_code = su.subject_code AND re.turn_id = tu.turn_id AND re.room_id = ro.room_id AND re.registed_id in (select registed_id from student_registed where mssv = ?)";
+            params = [req.params.exam_id, req.params.exam_id, req.user.username];
+            sql = "SELECT re.registed_id, re.subject_code, su.subject_name, su.credit, re.date, tu.time_begin, ro.room_name, re.count_registed, ro.count_computer FROM registed as re, subject as su, turn as tu, room as ro WHERE re.exam_id = ? AND su.exam_id = ? AND re.subject_code = su.subject_code AND re.turn_id = tu.turn_id AND re.room_id = ro.room_id AND re.registed_id in (select registed_id from student_registed where mssv = ?)";
         }
         
         let data = await db.execute(sql, params);

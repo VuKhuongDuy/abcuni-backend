@@ -37,21 +37,20 @@ module.exports.getSubjectByStudent = async (req, res) => {
             return;
         }
 
-        let sql = "SELECT s.subject_code,s.subject_name,s.credit, ss.enable_test FROM subject_student as ss, subject as s WHERE ss.mssv = ? AND ss.subject_code = s.subject_code AND ss.exam_id = ?";
+        let sql = "SELECT s.subject_code,s.subject_name,s.credit, ss.enable_test FROM subject_student as ss, subject as s WHERE ss.mssv = ? AND ss.subject_code = s.subject_code AND ss.exam_id = ? AND s.exam_id = ?";
         let params  = [];
-
-        if(req.user.isAdmin) params = [req.params.mssv, req.params.exam_id];
-        else params = [req.user.username, req.params.exam_id];
-
+        if(req.user.isAdmin) params = [req.params.mssv, req.params.exam_id, req.params.exam_id];
+        else params = [req.user.username, req.params.exam_id, req.params.exam_id];
+        
         let data = await db.execute(sql, params);
-        console.log(data);
         res.send({
             success: true,
             data
         })
     }catch(e){
         res.send({
-            message: message.SERVER_ERROR,
+            // message: message.SERVER_ERROR,
+            message: e.message,
             success: false
         });
     }
@@ -70,7 +69,6 @@ module.exports.getStudentBySubject = async(req, res) => {
         let sql = "Select st.mssv, st.name_student, su.subject_code, su.subject_name, su.credit, ss.enable_test FROM subject_student as ss, student as st, subject as su WHERE ss.subject_code = ? AND ss.mssv = st.mssv AND ss.subject_code = su.subject_code AND ss.exam_id = ?";
         let params = [req.params.code_subject, req.params.exam_id];
         let data = await db.execute(sql, params);
-        console.log(data);
         res.send({
             success: true,
             data
@@ -99,9 +97,7 @@ module.exports.addSubject = async (req, res) => {
             return;
         }
 
-        for(let i =0; i< listSubject.length; i++){
-            console.log(listSubject[i].credit);
-            console.log(Number.isInteger(listSubject[i].credit));
+        for(let i =0; i< listSubject.length; i++){            
             if(!Number.isInteger(listSubject[i].credit)){
                 res.send({success: false, message: message.DATATYPE_NOT_NUMBER})
                 return;

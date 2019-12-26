@@ -10,6 +10,7 @@ let router = express.Router();
 
 // API FOR ADMIN
 router.get('/admin', user.checkAdmin);
+router.get('/admin/list', user.getListAdmin);
 router.get('/admin/student/', student.getAllStudent);
 router.post('/admin/user/add', user.addUser);
 router.post('/admin/exam/add', exam.addExam);

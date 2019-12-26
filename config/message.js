@@ -4,7 +4,7 @@ module.exports.message = {
     SUBJECT_EMPTY: "Hãy chọn 1 môn học",
     WRONG_LOGIN: "Tài khoản hoặc mật khẩu sai",
     ERROR: 'Chúng tôi đã gặp sự cố!',
-    PERMISSION: 'Bạn không được cấp quyền để làm việc này',
+    PERMISSION: 'Bạn không có quyền để làm việc này',
     NOT_SUPER_ADMIN: "Tài khoản không phải là quản trị viên cao cấp",
     USER_EXIST: 'Người dùng đã tồn tại',
     CHANGE: 'Thay đổi thành công',
