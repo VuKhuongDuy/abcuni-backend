@@ -83,8 +83,9 @@ module.exports.login = async (req, res) => {
 
 module.exports.getListAdmin = async(req, res) => {
     try{
-        if(!isSuperAdmin(req.user.username)){
-            res.send({success: false, message: message.PERMISSION});
+        let isSuper = await isSuperAdmin(req.user.username);
+        if(!isSuper){
+            res.send({success: false, message: message.PERMISSION})
             return;
         }
         let url = 'select email from admin where super_admin = 0';
@@ -111,15 +112,17 @@ module.exports.addAdmin = async (req, res) => {
             return;
         }
 
-        if (await existUser(req.body.email, true)) {
+        let existedUser = await existUser(req.body.email, true);
+        if (existedUser) {
             throw new Error(message.USER_EXIST);
         }
 
-        if (!isSuperAdmin(req.user.username, req.user.password)) {
+        let isSuper = await isSuperAdmin(req.user.username);
+        if (!isSuper) {
             throw new Error(message.NOT_SUPER_ADMIN);
         }
 
-        if(!checkEmail(req.user.username)){
+        if(!checkEmail(req.body.email)){
             res.send({success: false, message: message.EMAIL_INVALID})
             return;
         }
@@ -132,7 +135,8 @@ module.exports.addAdmin = async (req, res) => {
 
         await db.execute(sql, params);
         res.send({
-            success: true
+            success: true,
+            message: message.ADDSUCCESS
         })
 
     } catch (err) {
@@ -252,6 +256,34 @@ module.exports.changePasswordUser = async (req, res) => {
     }
 }
 
+module.exports.deleteAdmin = async function(req, res){
+    try{
+        if(!req.params.email){
+            res.send({success: false, message: message.DATA_EMPTY})
+            return;
+        }
+        let isSuper = await isSuperAdmin(req.user.username);
+        if(!isSuper){
+            res.send({success: false, message: message.PERMISSION})
+            return;
+        }
+        let url = 'delete from admin where email = ? ';
+        let params = [req.params.email];
+        console.log(params);
+        let data = await db.execute(url, params);
+        res.send({
+            success: true,
+            data,
+            message: message.DELETESUCCESS
+        })
+    }catch (err) {
+        res.send({
+            message: err.message,
+            success: false
+        });
+    }
+}
+
 module.exports.checkAdmin = function(req, res){
     res.send({
         success: true
@@ -278,6 +310,5 @@ async function isSuperAdmin(email) {
 function checkEmail(email){
     let regex = /^[a-z0-9_\.]{5,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$/gm;
     let isEmail = regex.test(email);
-    console.log(isEmail);
     return isEmail;
 }

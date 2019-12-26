@@ -12,6 +12,7 @@ let router = express.Router();
 router.get('/admin', user.checkAdmin);
 router.get('/admin/list', user.getListAdmin);
 router.get('/admin/student/', student.getAllStudent);
+router.post('/admin/add', user.addAdmin);
 router.post('/admin/user/add', user.addUser);
 router.post('/admin/exam/add', exam.addExam);
 router.post('/admin/regist', registed.registSubject)
@@ -20,6 +21,7 @@ router.post('/admin/student/add', student.addStudent);
 router.post('/admin/subject/add', subject.addSubject);
 router.post('/admin/subject/student', subject.addStudentSubject);
 router.post('/admin/turn/add', turn.addTurn);
+router.delete('/admin/:email', user.deleteAdmin);
 router.delete('/admin/turn/:turn_id', turn.deleteTurn);
 router.delete('/admin/regist/:registed_id', registed.deleteSubjectRegisted);
 router.delete('/admin/room/:exam_id/:room_id', room.deleteRoom);
