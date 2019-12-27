@@ -35,7 +35,6 @@ module.exports.addRoom = async (req, res) => {
         let listRoom = JSON.parse(req.body.listRoom);
 
         if(listRoom.length > 0 && (!listRoom[0].room_name || !listRoom[0].count_computer)){
-            console.log(listRoom);
 
             res.send({success: false, message: message.DATA_ROOM_WRONG})
             return;

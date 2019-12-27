@@ -42,6 +42,30 @@ module.exports.getSubjectRegisted = async (req, res) => {
     }
 }
 
+module.exports.getListStudentRegistedSubject = async(req, res) => {
+    try{
+        if(!req.params.registed_id){
+            res.send({
+                message: message.DATA_EMPTY,
+                success: false
+            });
+            return;
+        }
+
+        let sql = 'select * from student as st, registed as re, student_registed as sr, turn as t, room as r, subject as su where st.mssv = sr.mssv AND re.registed_id = ? AND re.registed_id = sr.registed_id AND re.turn_id = t.turn_id AND r.room_id = re.room_id AND su.subject_code = re.subject_code';
+        let params = [req.params.registed_id];
+        let data = await db.execute(sql, params);
+        res.send({
+            success: true,
+            data
+        })
+    }catch(e){
+        res.send({
+            message: message.SERVER_ERROR,
+            success: false
+        });
+    }
+}
 
 module.exports.registSubject = async(req, res) => {
     try{

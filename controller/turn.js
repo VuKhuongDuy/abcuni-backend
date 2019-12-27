@@ -14,10 +14,7 @@ module.exports.addTurn = async (req, res) => {
             res.send({success: false, message: message.DATA_TURN_WRONG})
             return;
         }
-        console.log(listTurn);
         for(let i =0; i< listTurn.length; i++){
-            console.log(listTurn[i].turn);
-            console.log(Number.isInteger(listTurn[i].turn));
             if(!Number.isInteger(listTurn[i].turn)){
                 res.send({success: false, message: message.DATATYPE_NOT_NUMBER})
                 return;

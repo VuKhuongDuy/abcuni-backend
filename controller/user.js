@@ -167,7 +167,6 @@ module.exports.addUser = async (req, res) => {
         
         var salt = await bcrypt.genSaltSync(10);
         for(let i=0; i< listUser.length; i++){
-            console.log(listUser[i].email);
             if(!checkEmail(listUser[i].email)){
                 res.send({
                     success: false,
@@ -237,6 +236,50 @@ module.exports.changePasswordUser = async (req, res) => {
             return;
         }
 
+        let sql = " UPDATE user SET password = ? WHERE mssv = ?";
+        var salt = bcrypt.genSaltSync(10);
+        var passwordHash = bcrypt.hashSync(req.body.newPassword, salt); 
+        params = [passwordHash, req.body.username];
+        await db.execute(sql, params);
+
+        res.send({
+            message: message.CHANGE,
+            success: true
+        })
+
+    } catch (err) {
+        res.send({
+            message: message.SERVER_ERROR,
+            success: false
+        });
+    }
+}
+
+module.exports.changePasswordUserByAdmin = async function(req, res) {
+    try {
+        if (
+            !req.body.newPassword || 
+            !req.body.username || 
+            !req.body.confirmPassword ||             
+            req.body.newPassword === '' || 
+            req.body.username === '' || 
+            req.body.confirmPassword === ''
+        ) {
+            res.status(200).send({
+                message: message.DATA_EMPTY,
+                success: false
+            });
+            return;
+        }
+
+        if(req.body.newPassword != req.body.confirmPassword){
+            res.status(200).send({
+                message: message.PASSWORD_CONFIRM_WRONG,
+                success: false
+            });
+            return;
+        }
+        
         let sql = " UPDATE user SET password = ? WHERE mssv = ?";
         var salt = bcrypt.genSaltSync(10);
         var passwordHash = bcrypt.hashSync(req.body.newPassword, salt); 
