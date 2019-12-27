@@ -263,13 +263,18 @@ module.exports.deleteAdmin = async function(req, res){
             return;
         }
         let isSuper = await isSuperAdmin(req.user.username);
+        let isSuper2 = await isSuperAdmin(req.params.email);
         if(!isSuper){
             res.send({success: false, message: message.PERMISSION})
             return;
         }
+        if(isSuper2){
+            res.send({success: true, message: message.CANT_DELETE_SUPERADMIN})
+            return;
+        }
         let url = 'delete from admin where email = ? ';
         let params = [req.params.email];
-        console.log(params);
+        
         let data = await db.execute(url, params);
         res.send({
             success: true,

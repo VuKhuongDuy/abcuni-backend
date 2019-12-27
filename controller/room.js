@@ -33,12 +33,13 @@ module.exports.addRoom = async (req, res) => {
             return;
         }
         let listRoom = JSON.parse(req.body.listRoom);
-        
+
         if(listRoom.length > 0 && (!listRoom[0].room_name || !listRoom[0].count_computer)){
+            console.log(listRoom);
+
             res.send({success: false, message: message.DATA_ROOM_WRONG})
             return;
         }
-
         for(let i =0; i< listRoom.length; i++){
             if(!Number.isInteger(listRoom[i].count_computer)){
                 res.send({success: false, message: message.DATATYPE_NOT_NUMBER})

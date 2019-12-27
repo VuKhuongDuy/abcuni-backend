@@ -76,6 +76,14 @@ module.exports.registSubject = async(req, res) => {
                 message: message.ROOM_NONE_EXISTED
             })
         }
+
+        let sql_duplicate = 'select * from registed where exam_id = ? AND turn_id = ? AND date = ? AND room_id = ? limit 1';
+        let subjectDuplicate = await db.execute(sql_duplicate, [req.body.exam_id, req.body.turn_id, req.body.date, req.body.room_id]);
+        if(subjectDuplicate.length > 0){
+            res.send({success: false, message: message.DUPLICATED_SUBJECT_REGIST});
+            return;
+        }
+
         let sql = 'INSERT INTO registed(exam_id, subject_code, turn_id, date, room_id, count_registed) values(?, ?, ?, ?, ?, 0)';
         let params = [req.body.exam_id, req.body.subject_code, req.body.turn_id, req.body.date, req.body.room_id]
         let data = await db.execute(sql, params);
@@ -85,8 +93,7 @@ module.exports.registSubject = async(req, res) => {
         })
     }catch(e){
         res.send({
-            // message: message.SERVER_ERROR,
-            message: e.message,
+            message: message.SERVER_ERROR,
             success: false
         });
     }

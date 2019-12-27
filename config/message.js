@@ -35,5 +35,7 @@ module.exports.message = {
     DATA_TURN_WRONG: 'Dữ liệu nhập vào cần gồm 2 cột có tên: turn(số), time_begin(kí tự)',
     DATA_STUDENT_WRONG: "Dữ liệu nhập vào cần có 4 cột với tên: mssv(kí tự ), name(kí tự), birthday(kí tự), sex(kí tự)",
     DATA_SUBJECT_WRONG: 'Dữ liệu nhập vào cần có 4 cột với tên lần lượt: code_subject(kí tự), name_subject(kí tự), credit(số)',
-    DATATYPE_NOT_NUMBER: 'Dữ liệu nhập vào không đúng kiểu.'
+    DATATYPE_NOT_NUMBER: 'Dữ liệu nhập vào không đúng kiểu.',
+    CANT_DELETE_SUPERADMIN: 'Không thể xoá tài khoản này được',
+    DUPLICATED_SUBJECT_REGIST: 'Ca này tại phòng này đã có người đăng kí'
 }
